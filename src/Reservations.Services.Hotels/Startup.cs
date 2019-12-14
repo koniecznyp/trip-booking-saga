@@ -1,11 +1,18 @@
-﻿using Chronicle;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Reservations.Common.Events;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Reservations.Common.Commands;
 using Reservations.Common.RabbitMq;
-using Reservations.Transactions.Handlers;
+using Reservations.Services.Cars.Handlers;
 
 namespace Reservations.Services.Cars
 {
@@ -21,9 +28,8 @@ namespace Reservations.Services.Cars
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddChronicle();
             services.AddRabbitMq(Configuration);
-            services.AddScoped(typeof(IEventHandler<>), typeof(EventHandler<>));
+            services.AddScoped<ICommandHandler<BookHotel>, BookHotelHandler>();
             services.AddScoped<IBusPublisher, BusPublisher>();
         }
 
@@ -35,8 +41,7 @@ namespace Reservations.Services.Cars
             }
 
             app.UseRabbitMq()
-                .SubscribeEvent<CarBooked>()
-                .SubscribeEvent<HotelBooked>();
+                .SubscribeCommand<BookHotel>();
             app.UseMvc();
         }
     }

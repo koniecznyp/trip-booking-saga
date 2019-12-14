@@ -13,6 +13,11 @@ namespace Reservations.Common.RabbitMq
         {
         }
         
+        private CorrelationContext(Guid id)
+        {
+            Id = id;
+        }
+        
         public CorrelationContext(Guid id, Guid userId, string resource)
         {
             Id = id;
@@ -20,5 +25,8 @@ namespace Reservations.Common.RabbitMq
             Resource = resource;
             CreatedAt = DateTime.UtcNow;
         }
+
+        public static ICorrelationContext FromId(Guid id)
+            => new CorrelationContext(id);
     }
 }
