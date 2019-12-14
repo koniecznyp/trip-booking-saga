@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using RawRabbit;
 using Reservations.Common.Commands;
@@ -17,6 +18,7 @@ namespace Reservations.Services.Cars.Handlers
 
         public async Task HandleAsync(BookHotel command, ICorrelationContext context)
         {
+            throw new Exception("some test problem with hotel booking...");
             await _busPublisher.PublishAsync(new HotelBooked(command.UserId, command.StartDate, command.EndDate), context);
         }
     }

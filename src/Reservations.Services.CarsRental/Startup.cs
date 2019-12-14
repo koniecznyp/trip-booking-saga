@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Reservations.Common.Commands;
+using Reservations.Common.Events;
 using Reservations.Common.RabbitMq;
 using Reservations.Services.Cars.Handlers;
 
@@ -41,7 +42,8 @@ namespace Reservations.Services.Cars
             }
 
             app.UseRabbitMq()
-                .SubscribeCommand<BookCar>();
+                .SubscribeCommand<BookCar>(onError: ex 
+                    => new BookCarRejected(ex.Message));
             app.UseMvc();
         }
     }
