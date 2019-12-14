@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using RawRabbit;
+using RawRabbit.Enrichers.MessageContext;
+using Reservations.Common.Commands;
 using Reservations.Common.Events;
 
 namespace Reservations.Common.RabbitMq
@@ -13,9 +15,14 @@ namespace Reservations.Common.RabbitMq
             _busClient = busClient;
         }
 
-        public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
+        public async Task SendAsync<TCommand>(TCommand command, ICorrelationContext context) where TCommand : ICommand
         {
-            await _busClient.PublishAsync(@event);
+            await _busClient.PublishAsync(command, ctx => ctx.UseMessageContext(context));
+        }
+
+        public async Task PublishAsync<TEvent>(TEvent @event, ICorrelationContext context) where TEvent : IEvent
+        {
+            await _busClient.PublishAsync(@event, ctx => ctx.UseMessageContext(context));
         }
     }
 }

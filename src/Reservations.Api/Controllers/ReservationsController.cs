@@ -1,24 +1,29 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RawRabbit;
 using Reservations.Common.Commands;
+using Reservations.Common.RabbitMq;
 
 namespace Reservations.Api.Controllers
 {
     [Route("api/[controller]")]
     public class ReservationsController : Controller
     {
-        private readonly IBusClient _busClient;
-        public ReservationsController(IBusClient busClient)
+        private readonly IBusPublisher _busPublisher;
+
+        public ReservationsController(IBusPublisher busPublisher)
         {
-            _busClient = busClient;
+            _busPublisher = busPublisher;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateReservation command)
         {
-            await _busClient.PublishAsync(new BookCar(){ UserId = command.UserId, StartDate = command.StartDate, EndDate = command.EndDate });
-            return Accepted("cars/test1");
+            var id = Guid.NewGuid();
+            var context = new CorrelationContext(id, command.UserId, "reservations");
+            await _busPublisher.SendAsync(new BookCar(command.UserId, command.StartDate, command.EndDate), context);
+            return Accepted($"reservations/{id}");
         }
     }
 }

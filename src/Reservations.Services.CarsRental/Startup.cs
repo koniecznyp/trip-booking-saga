@@ -30,6 +30,7 @@ namespace Reservations.Services.Cars
             services.AddMvc();
             services.AddRabbitMq(Configuration);
             services.AddScoped<ICommandHandler<BookCar>, BookCarHandler>();
+            services.AddScoped<IBusPublisher, BusPublisher>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

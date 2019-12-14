@@ -22,25 +22,27 @@ namespace Reservations.Common.RabbitMq
 
         public IBusSubscriber SubscribeCommand<TCommand>() where TCommand : ICommand
         {
-            _busClient.SubscribeAsync<TCommand>(async (command) =>
+            _busClient.SubscribeAsync<TCommand, CorrelationContext>(async (command, correlationContext) =>
             {
                 var commandHandler = _serviceProvider.GetService<ICommandHandler<TCommand>>();
-                return await TryHandleAsync(command,
-                    () => commandHandler.HandleAsync(command));
+                return await TryHandleAsync(command, correlationContext,
+                    () => commandHandler.HandleAsync(command, correlationContext));
             });
             return this;
         }
 
         public IBusSubscriber SubscribeEvent<TEvent>() where TEvent : IEvent
         {
-            _busClient.SubscribeAsync<TEvent>(async (@event) => {
+            _busClient.SubscribeAsync<TEvent, CorrelationContext>(async (@event, correlationContext) => {
                 var handler = _serviceProvider.GetService<IEventHandler<TEvent>>();
-                return await TryHandleAsync(@event, () => handler.HandleAsync(@event));
+                return await TryHandleAsync(@event, correlationContext, 
+                    () => handler.HandleAsync(@event, correlationContext));
             });
             return this;
         }
 
-        private async Task<Acknowledgement> TryHandleAsync<TMessage>(TMessage message, Func<Task> handle)
+        private async Task<Acknowledgement> TryHandleAsync<TMessage>(TMessage message, 
+            CorrelationContext correlationContext, Func<Task> handle)
         {
             try
             {

@@ -2,21 +2,22 @@ using System.Threading.Tasks;
 using RawRabbit;
 using Reservations.Common.Commands;
 using Reservations.Common.Events;
+using Reservations.Common.RabbitMq;
 
 namespace Reservations.Services.Cars.Handlers
 {
     public class BookCarHandler : ICommandHandler<BookCar>
     {
-        private readonly IBusClient _busClient;
+        private readonly IBusPublisher _busPublisher;
 
-        public BookCarHandler(IBusClient busClient)
+        public BookCarHandler(IBusPublisher busPublisher)
         {
-            _busClient = busClient;
+            _busPublisher = busPublisher;
         }
 
-        public async Task HandleAsync(BookCar command)
+        public async Task HandleAsync(BookCar command, ICorrelationContext context)
         {
-            await _busClient.PublishAsync(new CarBooked(command.UserId));
+            await _busPublisher.PublishAsync(new CarBooked(command.UserId, command.StartDate, command.EndDate), context);
         }
     }
 }

@@ -26,6 +26,7 @@ namespace Reservations.Api
         {
             services.AddMvc();
             services.AddRabbitMq(Configuration);
+            services.AddScoped<IBusPublisher, BusPublisher>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

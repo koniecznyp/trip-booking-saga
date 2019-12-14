@@ -4,11 +4,15 @@ namespace Reservations.Common.Events
 {
     public class CarBooked : IEvent
     {
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         
-        public CarBooked(Guid id)
+        public CarBooked(Guid userId, DateTime startDate, DateTime endDate)
         {
-            Id = id;
+            UserId = userId;
+            StartDate = startDate;
+            EndDate = endDate;
         }
     }
 }

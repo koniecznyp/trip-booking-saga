@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RawRabbit;
+using RawRabbit.Enrichers.MessageContext;
 using RawRabbit.Instantiation;
 
 namespace Reservations.Common.RabbitMq
@@ -18,7 +19,9 @@ namespace Reservations.Common.RabbitMq
             section.Bind(options);
             var client = RawRabbitFactory.CreateSingleton(new RawRabbitOptions
             {
-                ClientConfiguration = options
+                ClientConfiguration = options,
+                Plugins = p => p.UseMessageContext<CorrelationContext>()
+                    .UseContextForwarding()
             });
             services.AddSingleton<IBusClient>(_ => client);
         }
