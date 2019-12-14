@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Chronicle;
 using Reservations.Common.Commands;
 using Reservations.Common.Events;
+using Reservations.Common.RabbitMq;
 
 namespace Reservations.Transactions.Handlers
 {
@@ -14,8 +15,10 @@ namespace Reservations.Transactions.Handlers
             _sagaCoordinator = sagaCoordinator;
         }
 
-        public async Task HandleAsync(T @event)
+        public async Task HandleAsync(T @event, ICorrelationContext context)
         {
+            var sagaContext = Sagas.SagaContext.FromCorrelationContext(context);
+            await _sagaCoordinator.ProcessAsync(@event, sagaContext);
         }
     }
 }

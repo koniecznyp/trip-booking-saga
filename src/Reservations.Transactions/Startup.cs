@@ -21,9 +21,10 @@ namespace Reservations.Services.Cars
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddChronicle();
             services.AddRabbitMq(Configuration);
             services.AddScoped(typeof(IEventHandler<>), typeof(EventHandler<>));
-            services.AddChronicle();
+            services.AddScoped<IBusPublisher, BusPublisher>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

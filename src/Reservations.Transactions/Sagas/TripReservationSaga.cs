@@ -15,12 +15,12 @@ namespace Reservations.Transactions.Sagas
             _busPublisher = busPublisher;
         }
 
-        public async Task CompensateAsync(CarBooked message, ISagaContext context)
+        public async Task HandleAsync(CarBooked message, ISagaContext context)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task HandleAsync(CarBooked message, ISagaContext context)
+        public async Task CompensateAsync(CarBooked message, ISagaContext context)
         {
             throw new System.NotImplementedException();
         }
