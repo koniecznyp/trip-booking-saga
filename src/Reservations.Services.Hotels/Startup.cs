@@ -43,7 +43,7 @@ namespace Reservations.Services.Cars
 
             app.UseRabbitMq()
                 .SubscribeCommand<CreateHotelReservation>(onError: ex 
-                    => new HotelReservationRejected(ex.Message));
+                    => new CreateHotelReservationRejected(ex.Message));
             app.UseMvc();
         }
     }

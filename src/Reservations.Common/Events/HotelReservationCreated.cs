@@ -2,13 +2,13 @@ using System;
 
 namespace Reservations.Common.Events
 {
-    public class CarReserved : IEvent
+    public class HotelReservationCreated : IEvent
     {
         public Guid UserId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         
-        public CarReserved(Guid userId, DateTime startDate, DateTime endDate)
+        public HotelReservationCreated(Guid userId, DateTime startDate, DateTime endDate)
         {
             UserId = userId;
             StartDate = startDate;

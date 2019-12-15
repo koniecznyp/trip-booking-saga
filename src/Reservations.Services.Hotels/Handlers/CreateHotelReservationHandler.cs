@@ -19,7 +19,7 @@ namespace Reservations.Services.Cars.Handlers
         public async Task HandleAsync(CreateHotelReservation command, ICorrelationContext context)
         {
             throw new Exception("some test problem with hotel booking...");
-            await _busPublisher.PublishAsync(new HotelReserved(command.UserId, command.StartDate, command.EndDate), context);
+            await _busPublisher.PublishAsync(new HotelReservationCreated(command.UserId, command.StartDate, command.EndDate), context);
         }
     }
 }

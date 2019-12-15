@@ -1,10 +1,10 @@
 namespace Reservations.Common.Events
 {
-    public class HotelReservationRejected : IRejectedEvent
+    public class CreateCarReservationRejected : IRejectedEvent
     {
         public string Message { get; set; }
 
-        public HotelReservationRejected(string message)
+        public CreateCarReservationRejected(string message)
         {
             Message = message;
         }

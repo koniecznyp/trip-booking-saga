@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using RawRabbit;
 using Reservations.Common.Commands;
@@ -17,7 +18,8 @@ namespace Reservations.Services.Cars.Handlers
 
         public async Task HandleAsync(CreateCarReservation command, ICorrelationContext context)
         {
-            await _busPublisher.PublishAsync(new CarReserved(command.UserId, command.StartDate, command.EndDate), context);
+            var reservationId = Guid.NewGuid(); // generate some unique car reservation Id
+            await _busPublisher.PublishAsync(new CarReservationCreated(reservationId, command.UserId, command.StartDate, command.EndDate), context);
         }
     }
 }
