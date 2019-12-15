@@ -22,7 +22,7 @@ namespace Reservations.Api.Controllers
         {
             var id = Guid.NewGuid();
             var context = new CorrelationContext(id, command.UserId, "reservations");
-            await _busPublisher.SendAsync(new BookCar(command.UserId, command.StartDate, command.EndDate), context);
+            await _busPublisher.SendAsync(new CreateCarReservation(command.UserId, command.StartDate, command.EndDate), context);
             return Accepted($"reservations/{id}");
         }
     }

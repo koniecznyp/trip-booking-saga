@@ -35,10 +35,10 @@ namespace Reservations.Services.Cars
             }
 
             app.UseRabbitMq()
-                .SubscribeEvent<CarBooked>()
-                .SubscribeEvent<HotelBooked>()
-                .SubscribeEvent<BookCarRejected>()
-                .SubscribeEvent<BookHotelRejected>();
+                .SubscribeEvent<CarReserved>()
+                .SubscribeEvent<HotelReserved>()
+                .SubscribeEvent<CarReservationRejected>()
+                .SubscribeEvent<HotelReservationRejected>();
             app.UseMvc();
         }
     }

@@ -30,7 +30,7 @@ namespace Reservations.Services.Cars
         {
             services.AddMvc();
             services.AddRabbitMq(Configuration);
-            services.AddScoped<ICommandHandler<BookCar>, BookCarHandler>();
+            services.AddScoped<ICommandHandler<CreateCarReservation>, CreateCarReservationHandler>();
             services.AddScoped<IBusPublisher, BusPublisher>();
         }
 
@@ -42,8 +42,8 @@ namespace Reservations.Services.Cars
             }
 
             app.UseRabbitMq()
-                .SubscribeCommand<BookCar>(onError: ex 
-                    => new BookCarRejected(ex.Message));
+                .SubscribeCommand<CreateCarReservation>(onError: ex 
+                    => new CarReservationRejected(ex.Message));
             app.UseMvc();
         }
     }
