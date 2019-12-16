@@ -1,8 +1,10 @@
 using System;
 using Reservations.Common.Events;
+using Reservations.Common.RabbitMq;
 
 namespace Reservations.Transactions.Messages.CarsRental.Events
 {
+    [MessageNamespace("cars_rental")]
     public class CarReservationCreated : IEvent
     {
         public Guid ReservationId { get; set; }

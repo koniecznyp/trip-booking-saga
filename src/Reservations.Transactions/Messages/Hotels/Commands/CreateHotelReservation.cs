@@ -1,8 +1,10 @@
 using System;
 using Reservations.Common.Commands;
+using Reservations.Common.RabbitMq;
 
 namespace Reservations.Transactions.Messages.Hotels.Commands
 {
+    [MessageNamespace("hotels")]
     public class CreateHotelReservation : ICommand
     {
         public Guid UserId { get; set; }

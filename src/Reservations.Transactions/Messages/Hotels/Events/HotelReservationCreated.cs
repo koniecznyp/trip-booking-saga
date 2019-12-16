@@ -1,8 +1,10 @@
 using System;
 using Reservations.Common.Events;
+using Reservations.Common.RabbitMq;
 
 namespace Reservations.Transactions.Messages.Hotels.Events
 {
+    [MessageNamespace("hotels")]
     public class HotelReservationCreated : IEvent
     {
         public Guid UserId { get; set; }
