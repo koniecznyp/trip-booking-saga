@@ -18,7 +18,8 @@ namespace Reservations.Services.CarsRental.Handlers
 
         public async Task HandleAsync(CreateCarReservation command, ICorrelationContext context)
         {
-            var reservationId = Guid.NewGuid(); // generate some unique car reservation Id
+            var reservationId = Guid.NewGuid();
+            // some logic with car reservation...
             await _busPublisher.PublishAsync(new CarReservationCreated(reservationId, command.UserId, command.StartDate, command.EndDate), context);
         }
     }

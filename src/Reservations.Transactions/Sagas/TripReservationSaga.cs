@@ -14,13 +14,10 @@ namespace Reservations.Transactions.Sagas
 {
     public class TripReservationSaga : Saga,
         ISagaStartAction<CreateReservation>,
-
         ISagaAction<CarReservationCreated>,
         ISagaAction<CreateCarReservationRejected>,
-
         ISagaAction<HotelReservationCreated>,
         ISagaAction<CreateHotelReservationRejected>,
-
         ISagaAction<FlightReservationCreated>,
         ISagaAction<CreateFlightReservationRejected>
     {
@@ -56,8 +53,7 @@ namespace Reservations.Transactions.Sagas
 
         public async Task HandleAsync(CreateCarReservationRejected message, ISagaContext context)
         {
-            Reject();
-            await Task.CompletedTask;
+            await RejectAsync();
         }
 
         public async Task CompensateAsync(CreateCarReservationRejected message, ISagaContext context)
@@ -79,8 +75,7 @@ namespace Reservations.Transactions.Sagas
 
         public async Task HandleAsync(CreateHotelReservationRejected message, ISagaContext context)
         {
-            Reject();
-            await Task.CompletedTask;
+            await RejectAsync();
         }
 
         public async Task CompensateAsync(CreateHotelReservationRejected message, ISagaContext context)
@@ -90,8 +85,7 @@ namespace Reservations.Transactions.Sagas
 
         public async Task HandleAsync(FlightReservationCreated message, ISagaContext context)
         {
-            Complete();
-            await Task.CompletedTask;
+            await CompleteAsync();
         }
 
         public async Task CompensateAsync(FlightReservationCreated message, ISagaContext context)
@@ -101,8 +95,7 @@ namespace Reservations.Transactions.Sagas
 
         public async Task HandleAsync(CreateFlightReservationRejected message, ISagaContext context)
         {
-            Reject();
-            await Task.CompletedTask;
+            await RejectAsync();
         }
 
         public async Task CompensateAsync(CreateFlightReservationRejected message, ISagaContext context)

@@ -17,7 +17,7 @@ namespace Reservations.Services.CarsRental.Handlers
 
         public async Task HandleAsync(CancelCarReservation command, ICorrelationContext context)
         {
-            // some logic to cancel reservation based on ReservationId
+            // some logic to cancel car reservation based on CarReservationId
             await _busPublisher.PublishAsync(new CarReservationCanceled(command.ReservationId), context);
         }
     }
