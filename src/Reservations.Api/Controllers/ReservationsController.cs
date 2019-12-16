@@ -20,10 +20,9 @@ namespace Reservations.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateReservation command)
         {
-            //zmienic rozpoczynanie -> rozpoczynac w sadze!
             var id = Guid.NewGuid();
             var context = new CorrelationContext(id, command.UserId, "reservations");
-            await _busPublisher.SendAsync(new CreateCarReservation(command.UserId, command.StartDate, command.EndDate), context);
+            await _busPublisher.SendAsync(command, context);
             return Accepted($"reservations/{id}");
         }
     }
