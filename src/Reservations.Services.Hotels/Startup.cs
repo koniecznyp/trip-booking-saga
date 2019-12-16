@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Reservations.Common.Commands;
-using Reservations.Common.Events;
 using Reservations.Common.RabbitMq;
-using Reservations.Services.Cars.Handlers;
+using Reservations.Services.Hotels.Handlers;
 using Reservations.Services.Hotels.Messages.Commands;
 using Reservations.Services.Hotels.Messages.Events;
 
-namespace Reservations.Services.Cars
+namespace Reservations.Services.Hotels
 {
     public class Startup
     {
@@ -33,6 +24,7 @@ namespace Reservations.Services.Cars
             services.AddMvc();
             services.AddRabbitMq(Configuration);
             services.AddScoped<ICommandHandler<CreateHotelReservation>, CreateHotelReservationHandler>();
+            services.AddScoped<ICommandHandler<CancelHotelReservation>, CancelHotelReservationHandler>();
             services.AddScoped<IBusPublisher, BusPublisher>();
         }
 
@@ -45,7 +37,9 @@ namespace Reservations.Services.Cars
 
             app.UseRabbitMq()
                 .SubscribeCommand<CreateHotelReservation>(onError: ex 
-                    => new CreateHotelReservationRejected(ex.Message));
+                    => new CreateHotelReservationRejected(ex.Message))
+                .SubscribeCommand<CancelHotelReservation>(onError: ex 
+                    => new CancelHotelReservationRejected(ex.Message));
             app.UseMvc();
         }
     }

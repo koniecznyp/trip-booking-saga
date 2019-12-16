@@ -5,7 +5,7 @@ using Reservations.Common.RabbitMq;
 using Reservations.Services.Hotels.Messages.Commands;
 using Reservations.Services.Hotels.Messages.Events;
 
-namespace Reservations.Services.Cars.Handlers
+namespace Reservations.Services.Hotels.Handlers
 {
     public class CreateHotelReservationHandler : ICommandHandler<CreateHotelReservation>
     {
@@ -18,8 +18,9 @@ namespace Reservations.Services.Cars.Handlers
 
         public async Task HandleAsync(CreateHotelReservation command, ICorrelationContext context)
         {
-            throw new Exception("some test problem with hotel booking...");
-            await _busPublisher.PublishAsync(new HotelReservationCreated(command.UserId, command.StartDate, command.EndDate), context);
+            var reservationId = Guid.NewGuid();
+            // some logic with hotel reservation...
+            await _busPublisher.PublishAsync(new HotelReservationCreated(reservationId, command.UserId, command.StartDate, command.EndDate), context);
         }
     }
 }

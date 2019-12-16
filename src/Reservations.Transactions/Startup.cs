@@ -9,9 +9,10 @@ using Reservations.Common.RabbitMq;
 using Reservations.Transactions.Handlers;
 using Reservations.Transactions.Messages.Api;
 using Reservations.Transactions.Messages.CarsRental.Events;
+using Reservations.Transactions.Messages.Flights.Events;
 using Reservations.Transactions.Messages.Hotels.Events;
 
-namespace Reservations.Services.Cars
+namespace Reservations.Transactions
 {
     public class Startup
     {
@@ -44,12 +45,16 @@ namespace Reservations.Services.Cars
                 
                 .SubscribeEvent<CarReservationCreated>()
                 .SubscribeEvent<CreateCarReservationRejected>()
-
                 .SubscribeEvent<CarReservationCanceled>()
                 .SubscribeEvent<CancelCarReservationRejected>()
 
                 .SubscribeEvent<HotelReservationCreated>()
-                .SubscribeEvent<CreateHotelReservationRejected>();
+                .SubscribeEvent<CreateHotelReservationRejected>()
+                .SubscribeEvent<HotelReservationCanceled>()
+                .SubscribeEvent<CancelHotelReservationRejected>()
+
+                .SubscribeEvent<FlightReservationCreated>()
+                .SubscribeEvent<CreateFlightReservationRejected>();
             app.UseMvc();
         }
     }
