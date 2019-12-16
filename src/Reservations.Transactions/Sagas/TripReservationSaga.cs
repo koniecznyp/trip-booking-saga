@@ -4,6 +4,9 @@ using Reservations.Common.RabbitMq;
 using Reservations.Transactions.Messages.Api;
 using Reservations.Transactions.Messages.CarsRental.Commands;
 using Reservations.Transactions.Messages.CarsRental.Events;
+using Reservations.Transactions.Messages.Commands;
+using Reservations.Transactions.Messages.Flights.Commands;
+using Reservations.Transactions.Messages.Flights.Events;
 using Reservations.Transactions.Messages.Hotels.Commands;
 using Reservations.Transactions.Messages.Hotels.Events;
 
@@ -11,10 +14,15 @@ namespace Reservations.Transactions.Sagas
 {
     public class TripReservationSaga : Saga,
         ISagaStartAction<CreateReservation>,
+
         ISagaAction<CarReservationCreated>,
         ISagaAction<CreateCarReservationRejected>,
+
         ISagaAction<HotelReservationCreated>,
-        ISagaAction<CreateHotelReservationRejected>
+        ISagaAction<CreateHotelReservationRejected>,
+
+        ISagaAction<FlightReservationCreated>,
+        ISagaAction<CreateFlightReservationRejected>
     {
         private readonly IBusPublisher _busPublisher;
         
@@ -59,13 +67,14 @@ namespace Reservations.Transactions.Sagas
 
         public async Task HandleAsync(HotelReservationCreated message, ISagaContext context)
         {
-            Complete();
-            await Task.CompletedTask;
+            await _busPublisher.SendAsync(new CreateFlightReservation(message.UserId, message.StartDate, message.EndDate),
+                CorrelationContext.FromId(context.CorrelationId));
         }
 
         public async Task CompensateAsync(HotelReservationCreated message, ISagaContext context)
         {
-            await Task.CompletedTask;
+            await _busPublisher.SendAsync(new CancelHotelReservation(message.ReservationId),
+                CorrelationContext.FromId(context.CorrelationId));
         }
 
         public async Task HandleAsync(CreateHotelReservationRejected message, ISagaContext context)
@@ -75,6 +84,28 @@ namespace Reservations.Transactions.Sagas
         }
 
         public async Task CompensateAsync(CreateHotelReservationRejected message, ISagaContext context)
+        {
+            await Task.CompletedTask;
+        }
+
+        public async Task HandleAsync(FlightReservationCreated message, ISagaContext context)
+        {
+            Complete();
+            await Task.CompletedTask;
+        }
+
+        public async Task CompensateAsync(FlightReservationCreated message, ISagaContext context)
+        {
+            await Task.CompletedTask;
+        }
+
+        public async Task HandleAsync(CreateFlightReservationRejected message, ISagaContext context)
+        {
+            Reject();
+            await Task.CompletedTask;
+        }
+
+        public async Task CompensateAsync(CreateFlightReservationRejected message, ISagaContext context)
         {
             await Task.CompletedTask;
         }
