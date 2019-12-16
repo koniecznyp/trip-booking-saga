@@ -1,4 +1,6 @@
-namespace Reservations.Common.Events
+using Reservations.Common.Events;
+
+namespace Reservations.Transactions.Messages.Hotels.Events
 {
     public class CreateHotelReservationRejected : IRejectedEvent
     {

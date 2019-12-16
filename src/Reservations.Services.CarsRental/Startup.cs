@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Reservations.Common.Commands;
-using Reservations.Common.Events;
 using Reservations.Common.RabbitMq;
-using Reservations.Services.Cars.Handlers;
+using Reservations.Services.CarsRental.Handlers;
+using Reservations.Services.CarsRental.Messages.Commands;
+using Reservations.Services.CarsRental.Messages.Events;
 
 namespace Reservations.Services.Cars
 {

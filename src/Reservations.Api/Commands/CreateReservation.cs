@@ -1,7 +1,7 @@
 using System;
 using Reservations.Common.Commands;
 
-namespace Reservations.Common.Commands
+namespace Reservations.Api.Commands
 {
     public class CreateReservation : ICommand
     {

@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using RawRabbit;
 using Reservations.Common.Commands;
-using Reservations.Common.Events;
 using Reservations.Common.RabbitMq;
+using Reservations.Services.CarsRental.Messages.Commands;
+using Reservations.Services.CarsRental.Messages.Events;
 
-namespace Reservations.Services.Cars.Handlers
+namespace Reservations.Services.CarsRental.Handlers
 {
     public class CreateCarReservationHandler : ICommandHandler<CreateCarReservation>
     {

@@ -1,4 +1,6 @@
-namespace Reservations.Common.Events
+using Reservations.Common.Events;
+
+namespace Reservations.Services.CarsRental.Messages.Events
 {
     public class CancelCarReservationRejected : IRejectedEvent
     {

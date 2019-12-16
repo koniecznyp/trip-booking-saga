@@ -14,6 +14,8 @@ using Reservations.Common.Commands;
 using Reservations.Common.Events;
 using Reservations.Common.RabbitMq;
 using Reservations.Services.Cars.Handlers;
+using Reservations.Services.Hotels.Messages.Commands;
+using Reservations.Services.Hotels.Messages.Events;
 
 namespace Reservations.Services.Cars
 {

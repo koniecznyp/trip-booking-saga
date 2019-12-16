@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RawRabbit;
-using Reservations.Common.Commands;
+using Reservations.Api.Commands;
 using Reservations.Common.RabbitMq;
 
 namespace Reservations.Api.Controllers
@@ -20,6 +20,7 @@ namespace Reservations.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateReservation command)
         {
+            //zmienic rozpoczynanie -> rozpoczynac w sadze!
             var id = Guid.NewGuid();
             var context = new CorrelationContext(id, command.UserId, "reservations");
             await _busPublisher.SendAsync(new CreateCarReservation(command.UserId, command.StartDate, command.EndDate), context);

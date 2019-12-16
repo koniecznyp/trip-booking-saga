@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Reservations.Common.Events;
 using Reservations.Common.RabbitMq;
 using Reservations.Transactions.Handlers;
+using Reservations.Transactions.Messages.CarsRental.Events;
+using Reservations.Transactions.Messages.Hotels.Events;
 
 namespace Reservations.Services.Cars
 {

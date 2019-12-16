@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using Chronicle;
-using Reservations.Common.Commands;
-using Reservations.Common.Events;
 using Reservations.Common.RabbitMq;
+using Reservations.Transactions.Messages.CarsRental.Commands;
+using Reservations.Transactions.Messages.CarsRental.Events;
+using Reservations.Transactions.Messages.Hotels.Commands;
+using Reservations.Transactions.Messages.Hotels.Events;
 
 namespace Reservations.Transactions.Sagas
 {
