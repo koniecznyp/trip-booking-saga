@@ -8,7 +8,7 @@ using Reservations.Services.CarsRental.Handlers;
 using Reservations.Services.CarsRental.Messages.Commands;
 using Reservations.Services.CarsRental.Messages.Events;
 
-namespace Reservations.Services.Cars
+namespace Reservations.Services.CarsRental
 {
     public class Startup
     {

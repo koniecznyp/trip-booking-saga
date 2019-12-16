@@ -20,10 +20,10 @@ namespace Reservations.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateReservation command)
         {
-            var id = Guid.NewGuid();
-            var context = new CorrelationContext(id, command.UserId, "reservations");
+            var contextId = Guid.NewGuid();
+            var context = new CorrelationContext(contextId, command.UserId, "reservations");
             await _busPublisher.SendAsync(command, context);
-            return Accepted($"reservations/{id}");
+            return Accepted($"reservations/{contextId}");
         }
     }
 }
