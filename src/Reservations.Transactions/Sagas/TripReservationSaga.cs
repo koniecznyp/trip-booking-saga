@@ -35,9 +35,7 @@ namespace Reservations.Transactions.Sagas
         }
 
         public async Task CompensateAsync(CreateReservation message, ISagaContext context)
-        {
-            await Task.CompletedTask;
-        }
+            => await Task.CompletedTask;
 
         public async Task HandleAsync(CarReservationCreated message, ISagaContext context)
         {
@@ -52,14 +50,10 @@ namespace Reservations.Transactions.Sagas
         }
 
         public async Task HandleAsync(CreateCarReservationRejected message, ISagaContext context)
-        {
-            await RejectAsync();
-        }
+            => await RejectAsync();
 
         public async Task CompensateAsync(CreateCarReservationRejected message, ISagaContext context)
-        {
-            await Task.CompletedTask;
-        }
+            => await Task.CompletedTask;
 
         public async Task HandleAsync(HotelReservationCreated message, ISagaContext context)
         {
@@ -74,33 +68,21 @@ namespace Reservations.Transactions.Sagas
         }
 
         public async Task HandleAsync(CreateHotelReservationRejected message, ISagaContext context)
-        {
-            await RejectAsync();
-        }
+            => await RejectAsync();
 
         public async Task CompensateAsync(CreateHotelReservationRejected message, ISagaContext context)
-        {
-            await Task.CompletedTask;
-        }
+            => await Task.CompletedTask;
 
         public async Task HandleAsync(FlightReservationCreated message, ISagaContext context)
-        {
-            await CompleteAsync();
-        }
+            => await CompleteAsync();
 
         public async Task CompensateAsync(FlightReservationCreated message, ISagaContext context)
-        {
-            await Task.CompletedTask;
-        }
+            => await Task.CompletedTask;
 
         public async Task HandleAsync(CreateFlightReservationRejected message, ISagaContext context)
-        {
-            await RejectAsync();
-        }
+            => await RejectAsync();
 
         public async Task CompensateAsync(CreateFlightReservationRejected message, ISagaContext context)
-        {
-            await Task.CompletedTask;
-        }
+            => await Task.CompletedTask;
     }
 }

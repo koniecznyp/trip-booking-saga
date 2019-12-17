@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -22,21 +24,29 @@ namespace Reservations.Services.Flights
     public class Startup
     {
         public IConfiguration Configuration { get; }
+        public IContainer Container { get; set; }
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddRabbitMq(Configuration);
-            services.AddScoped<ICommandHandler<CreateFlightReservation>, CreateFlightReservationHandler>();
-            services.AddScoped<IBusPublisher, BusPublisher>();
+            var builder = new ContainerBuilder();
+            builder.Populate(services);
+            builder.AddRabbitMq();
+            builder.RegisterType<BusPublisher>().As<IBusPublisher>();
+            builder.RegisterType<CreateFlightReservationHandler>()
+                .As<ICommandHandler<CreateFlightReservation>>();
+            
+            Container = builder.Build();
+            return new AutofacServiceProvider(Container);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+            IApplicationLifetime applicationLifetime)
         {
             if (env.IsDevelopment())
             {
@@ -47,6 +57,7 @@ namespace Reservations.Services.Flights
                 .SubscribeCommand<CreateFlightReservation>(onError: ex 
                     => new CreateFlightReservationRejected(ex.Message));
             app.UseMvc();
+            applicationLifetime.ApplicationStopped.Register(() => Container.Dispose());
         }
     }
 }

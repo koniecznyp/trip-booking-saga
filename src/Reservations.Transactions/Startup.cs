@@ -1,4 +1,7 @@
-﻿using Chronicle;
+﻿using System;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Chronicle;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,20 +20,29 @@ namespace Reservations.Transactions
     public class Startup
     {
         public IConfiguration Configuration { get; }
+        public IContainer Container { get; set; }
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
             services.AddChronicle();
-            services.AddRabbitMq(Configuration);
-            services.AddScoped(typeof(ICommandHandler<>), typeof(CommandHandler<>));
-            services.AddScoped(typeof(IEventHandler<>), typeof(EventHandler<>));
-            services.AddScoped<IBusPublisher, BusPublisher>();
+
+            var builder = new ContainerBuilder();
+            builder.Populate(services);
+            builder.AddRabbitMq();
+            builder.RegisterType<BusPublisher>().As<IBusPublisher>();
+            builder.RegisterGeneric(typeof(CommandHandler<>))
+                .As(typeof(ICommandHandler<>));
+            builder.RegisterGeneric(typeof(Handlers.EventHandler<>))
+                .As(typeof(IEventHandler<>));
+            
+            Container = builder.Build();
+            return new AutofacServiceProvider(Container);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

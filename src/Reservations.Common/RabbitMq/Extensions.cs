@@ -1,10 +1,10 @@
 using System;
 using System.Reflection;
+using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using RawRabbit;
 using RawRabbit.Common;
+using RawRabbit.Configuration;
 using RawRabbit.Enrichers.MessageContext;
 using RawRabbit.Instantiation;
 using Reservations.Common.Extensions;
@@ -16,20 +16,45 @@ namespace Reservations.Common.RabbitMq
         public static IBusSubscriber UseRabbitMq(this IApplicationBuilder app)
             => new BusSubscriber(app);
             
-        public static void AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
+        public static void AddRabbitMq(this ContainerBuilder builder)
         {
-            var options = new RabbitMqOptions();
-            var section = configuration.GetSection("rabbitmq");
-            section.Bind(options);
-            var namingConventions = new CustomNamingConventions(options.Namespace);
-            var client = RawRabbitFactory.CreateSingleton(new RawRabbitOptions
+            builder.Register(context =>
             {
-                DependencyInjection = di => di.AddSingleton<INamingConventions>(namingConventions),
-                ClientConfiguration = options,
-                Plugins = p => p.UseMessageContext<CorrelationContext>()
-                    .UseContextForwarding()
-            });
-            services.AddSingleton<IBusClient>(_ => client);
+                var configuration = context.Resolve<IConfiguration>();
+                var options = new RabbitMqOptions();
+                configuration.GetSection("rabbitmq").Bind(options);
+                return options;
+            }).SingleInstance();
+
+            builder.Register(context =>
+            {
+                var configuration = context.Resolve<IConfiguration>();
+                var options = new RawRabbitConfiguration();
+                configuration.GetSection("rabbitmq").Bind(options);
+                return options;
+            }).SingleInstance();
+
+            builder.Register<IInstanceFactory>(context =>
+            {
+                var options = context.Resolve<RabbitMqOptions>();
+                var configuration = context.Resolve<RawRabbitConfiguration>();
+                var namingConventions = new CustomNamingConventions(options.Namespace);
+
+                return RawRabbitFactory.CreateInstanceFactory(new RawRabbitOptions
+                {
+                    DependencyInjection = ioc =>
+                    {
+                        ioc.AddSingleton(options);
+                        ioc.AddSingleton(configuration);
+                        ioc.AddSingleton<INamingConventions>(namingConventions);
+                    },
+                    ClientConfiguration = options,
+                    Plugins = p => p
+                        .UseMessageContext<CorrelationContext>()
+                        .UseContextForwarding()
+                });
+            }).SingleInstance();
+            builder.Register(context => context.Resolve<IInstanceFactory>().Create());
         }
 
         private class CustomNamingConventions : NamingConventions
