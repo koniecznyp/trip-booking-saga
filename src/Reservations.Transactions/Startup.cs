@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Reservations.Common.Commands;
 using Reservations.Common.Events;
+using Reservations.Common.Jaeger;
 using Reservations.Common.RabbitMq;
 using Reservations.Transactions.Handlers;
 using Reservations.Transactions.Messages.Api;
@@ -30,10 +31,12 @@ namespace Reservations.Transactions
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddOpenTracing();
             services.AddChronicle();
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
+            builder.AddJaeger();
             builder.AddRabbitMq();
             builder.RegisterType<BusPublisher>().As<IBusPublisher>();
             builder.RegisterGeneric(typeof(CommandHandler<>))

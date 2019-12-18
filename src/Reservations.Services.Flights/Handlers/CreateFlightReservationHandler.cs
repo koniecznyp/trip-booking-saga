@@ -18,9 +18,10 @@ namespace Reservations.Services.Flights.Handlers
 
         public async Task HandleAsync(CreateFlightReservation command, ICorrelationContext context)
         {
-            // some logic with flight reservation... but some error occured
-            throw new Exception("some test problem with flight booking...");
-            await _busPublisher.PublishAsync(new FlightReservationCreated(command.UserId, command.StartDate, command.EndDate), context);
+            // some logic with flight reservation... but some error may occur
+            //throw new Exception("some test problem with flight booking...");
+            var reservationId = Guid.NewGuid();
+            await _busPublisher.PublishAsync(new FlightReservationCreated(reservationId, command.UserId, command.StartDate, command.EndDate), context);
         }
     }
 }

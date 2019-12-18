@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Reservations.Common.Commands;
 using Reservations.Common.Events;
+using Reservations.Common.Jaeger;
 using Reservations.Common.RabbitMq;
 using Reservations.Services.Flights.Handlers;
 using Reservations.Services.Flights.Messages.Commands;
@@ -34,8 +35,10 @@ namespace Reservations.Services.Flights
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddOpenTracing();
             var builder = new ContainerBuilder();
             builder.Populate(services);
+            builder.AddJaeger();
             builder.AddRabbitMq();
             builder.RegisterType<BusPublisher>().As<IBusPublisher>();
             builder.RegisterType<CreateFlightReservationHandler>()

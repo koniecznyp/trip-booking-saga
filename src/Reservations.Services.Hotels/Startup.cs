@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Reservations.Common.Commands;
+using Reservations.Common.Jaeger;
 using Reservations.Common.RabbitMq;
 using Reservations.Services.Hotels.Handlers;
 using Reservations.Services.Hotels.Messages.Commands;
@@ -26,8 +27,10 @@ namespace Reservations.Services.Hotels
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddOpenTracing();
             var builder = new ContainerBuilder();
             builder.Populate(services);
+            builder.AddJaeger();
             builder.AddRabbitMq();
             builder.RegisterType<BusPublisher>().As<IBusPublisher>();
             builder.RegisterType<CreateHotelReservationHandler>()

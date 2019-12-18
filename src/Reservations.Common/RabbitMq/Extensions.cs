@@ -3,11 +3,13 @@ using System.Reflection;
 using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using OpenTracing;
 using RawRabbit.Common;
 using RawRabbit.Configuration;
 using RawRabbit.Enrichers.MessageContext;
 using RawRabbit.Instantiation;
 using Reservations.Common.Extensions;
+using Reservations.Common.Jaeger;
 
 namespace Reservations.Common.RabbitMq
 {
@@ -40,6 +42,8 @@ namespace Reservations.Common.RabbitMq
                 var configuration = context.Resolve<RawRabbitConfiguration>();
                 var namingConventions = new CustomNamingConventions(options.Namespace);
 
+                var tracer = context.Resolve<ITracer>();
+                
                 return RawRabbitFactory.CreateInstanceFactory(new RawRabbitOptions
                 {
                     DependencyInjection = ioc =>
@@ -47,11 +51,13 @@ namespace Reservations.Common.RabbitMq
                         ioc.AddSingleton(options);
                         ioc.AddSingleton(configuration);
                         ioc.AddSingleton<INamingConventions>(namingConventions);
+                        ioc.AddSingleton(tracer);
                     },
                     ClientConfiguration = options,
                     Plugins = p => p
                         .UseMessageContext<CorrelationContext>()
                         .UseContextForwarding()
+                        .UseJaeger(tracer)
                 });
             }).SingleInstance();
             builder.Register(context => context.Resolve<IInstanceFactory>().Create());

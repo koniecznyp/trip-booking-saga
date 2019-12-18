@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Reservations.Common.Jaeger;
 using Reservations.Common.RabbitMq;
 
 namespace Reservations.Api
@@ -28,8 +29,11 @@ namespace Reservations.Api
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddOpenTracing();
+
             var builder = new ContainerBuilder();
             builder.Populate(services);
+            builder.AddJaeger();
             builder.AddRabbitMq();
             builder.RegisterType<BusPublisher>().As<IBusPublisher>();
             

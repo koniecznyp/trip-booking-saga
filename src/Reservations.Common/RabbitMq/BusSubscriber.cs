@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTracing;
+using OpenTracing.Tag;
 using RawRabbit;
 using RawRabbit.Common;
 using RawRabbit.Enrichers.MessageContext;
@@ -14,11 +16,13 @@ namespace Reservations.Common.RabbitMq
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IBusClient _busClient;
+        private readonly ITracer _tracer;
 
         public BusSubscriber(IApplicationBuilder app)
         {
             _serviceProvider = app.ApplicationServices.GetService<IServiceProvider>();
             _busClient = _serviceProvider.GetService<IBusClient>();
+            _tracer = _serviceProvider.GetService<ITracer>();
         }
 
         public IBusSubscriber SubscribeCommand<TCommand>(Func<Exception, IRejectedEvent> onError = null) 
@@ -48,21 +52,34 @@ namespace Reservations.Common.RabbitMq
             CorrelationContext correlationContext, Func<Task> handle,
             Func<Exception, IRejectedEvent> onError = null)
         {
-            try
+            var messageName = message.GetType().Name;
+            var scope = _tracer
+                .BuildSpan("message-handler")
+                .AsChildOf(_tracer.ActiveSpan)
+                .StartActive(true);
+            
+            using(scope)
             {
-                await handle();
-                return new Ack();
-            }
-            catch(Exception ex)
-            {
-                var messageName = message.GetType().Name;
-                if (onError != null)
+                var span = scope.Span;
+                try
                 {
-                    var rejectedEvent = onError(ex);
-                    await _busClient.PublishAsync(rejectedEvent, ctx => ctx.UseMessageContext(correlationContext));
+                    span.Log($"START {messageName} with correlation context id: {correlationContext.Id}");
+                    await handle();
+                    span.Log($"END {messageName} with correlation context id: {correlationContext.Id}");
                     return new Ack();
                 }
-                throw new Exception($"Unable to handle a message: '{messageName}'");
+                catch(Exception ex)
+                {
+                    if (onError != null)
+                    {
+                        span.Log(ex.Message);
+                        span.SetTag(Tags.Error, true);
+                        var rejectedEvent = onError(ex);
+                        await _busClient.PublishAsync(rejectedEvent, ctx => ctx.UseMessageContext(correlationContext));
+                        return new Ack();
+                    }
+                    throw new Exception($"Unable to handle a message: '{messageName}'");
+                }
             }
         }
     }

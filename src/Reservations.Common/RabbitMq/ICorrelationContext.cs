@@ -7,6 +7,7 @@ namespace Reservations.Common.RabbitMq
         Guid Id { get; }
         Guid UserId { get; }
         string Resource { get; }
+        string SpanContext { get; }
         DateTime CreatedAt { get; }
     }
 }
